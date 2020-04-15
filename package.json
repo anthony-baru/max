@@ -1,0 +1,15 @@
+{
+  "name": "max",
+  "version": "1.0.0",
+  "description": "node js express",
+  "main": "server.js",
+  "scripts": {
+    "test": "test",
+    "start": "nodemon server.js"
+  },
+  "author": "Tony",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.3"
+  }
+}
