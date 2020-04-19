@@ -40,12 +40,18 @@ exports.getEditProduct = (req, res, next) => {
 exports.postEditProduct = (req, res, next) => {
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
-  const updatedprice = req.body.price;
-  const updatedimageUrl = req.body.imageUrl;
-  const updateddesc = req.body.description;
-  const updatedProduct = new Product(prodId, updatedTitle, updatedimageUrl, updateddesc, updatedprice);
+  const updatedPrice = req.body.price;
+  const updatedImageUrl = req.body.imageUrl;
+  const updatedDesc = req.body.description;
+  const updatedProduct = new Product(
+    prodId,
+    updatedTitle,
+    updatedImageUrl,
+    updatedDesc,
+    updatedPrice
+  );
   updatedProduct.save();
-  res.redirect('/admin/admin-products')
+  res.redirect('/admin/products');
 };
 
 exports.getProducts = (req, res, next) => {
@@ -53,7 +59,7 @@ exports.getProducts = (req, res, next) => {
     res.render('admin/products', {
       prods: products,
       pageTitle: 'Admin Products',
-      path: '/admin/admin-products'
+      path: '/admin/products'
     });
   });
 };
