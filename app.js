@@ -8,6 +8,8 @@ const errorController = require('./controllers/error');
 //models
 const Product = require('./models/product');
 const User = require('./models/user');
+const Cart = require('./models/cart');
+const CartItem = require('./models/cart-item');
 
 const app = express();
 
@@ -34,12 +36,22 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
+// associations
+//product and user => one to many
 Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 User.hasMany(Product);
 
-sequelize
-    // sync({ force: true })
-    .sync()
+// user and cart => one to one
+User.hasOne(Cart);
+Cart.belongsTo(User);
+
+//cart and product => many to many
+Cart.belongsToMany(Product, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });
+
+sequelize.
+    sync({ force: true })
+    // .sync()
     .then(result => {
         return User.findOne({
             where: {
