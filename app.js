@@ -2,13 +2,21 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
-
+const db = require('./util/db');
 const errorController = require('./controllers/error');
 
 const app = express();
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
+
+db.execute('SELECT * FROM products')
+    .then(res => {
+        console.log(res);
+    })
+    .catch(err => {
+        throw err;
+    });
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
