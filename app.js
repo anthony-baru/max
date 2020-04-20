@@ -20,6 +20,15 @@ const shopRoutes = require('./routes/shop');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use((req, res, next) => {
+    User.findOne({ where: { id: 1 } })
+        .then(user => {
+            req.user = user;
+            next();
+        })
+        .catch(err => console.log(err))
+});
+
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
@@ -29,10 +38,26 @@ Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 User.hasMany(Product);
 
 sequelize
-    .sync({ force: true })
+    // sync({ force: true })
+    .sync()
     .then(result => {
+        return User.findOne({
+            where: {
+                id: 1
+            }
+        })
+    })
+    .then(user => {
+        if (!user) {
+            return User.create({ name: 'anthony baru', email: 'anthonybaru@gmail.com' });
+        }
+        return user;
+    })
+    .then(user => {
         app.listen(port);
-    }).catch(err => {
+        console.log(user);
+    })
+    .catch(err => {
         console.log(err);
     })
 let port = process.env.port || 3000;

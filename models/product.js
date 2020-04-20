@@ -19,11 +19,11 @@ const Product = sequelize.define('product', {
   description: {
     type: Sequelize.STRING,
     allowNull: false
-  },
-  createdAt: {
-    type: 'TIMESTAMP',
-    defaultValue: Sequelize.NOW,
-    allowNull: false
   }
+  // createdAt: {
+  //   type: 'TIMESTAMP',
+  //   defaultValue: Sequelize.NOW,
+  //   allowNull: false
+  // }
 });
 module.exports = Product;
