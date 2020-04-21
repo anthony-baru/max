@@ -51,7 +51,7 @@ Product.belongsToMany(Cart, { through: CartItem });
 
 sequelize
     .sync()
-    // .sync()
+    // .sync({ force: true })
     .then(result => {
         return User.findOne({
             where: {
