@@ -6,11 +6,13 @@ $data = file_get_contents($url); // put the contents of the file into a variable
 $characters = json_decode($data); // decode the JSON feed
 
 foreach ($characters as $character) {
-    $query = "INSERT INTO products(`title`,`price`,`description`,`imageUrl`) 
+    $query = "INSERT INTO products(`title`,`price`,`description`,`imageUrl`,`userId`) 
                             VALUES('$character->title',
                             '$character->price',
                            ' $character->description',
-                            '$character->imageUrl') ";
+                            '$character->imageUrl',
+                            1
+                            ) ";
     $insert= mysqli_query($conn, $query);
     if ($insert) {
         echo $character->title .' inserted successfully!!!'. '<br>';
