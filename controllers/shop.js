@@ -156,7 +156,11 @@ exports.getCheckout = (req, res, next) => {
 
 
 exports.getTest = (req, res, next) => {
-  req.user.getCart().then(cart => {
-    res.send(cart);
-  }).catch(err => console.log(err));
+
+  req.user.getProducts()
+    .then(products => {
+      return products;
+    }).then(products => {
+      console.log(Object.keys(products.__proto__));
+    })
 }
