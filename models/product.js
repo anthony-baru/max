@@ -14,5 +14,9 @@ class Product {
         console.log(result)
       }).catch(err => { console.log(err) });
   }
+
+  static fetchAll() {
+    return db.collection('products').find();
+  }
 }
 module.exports = Product;
