@@ -2,9 +2,10 @@ const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
 let _db;
 const mongoConnect = callback => {
-    MongoClient.connect(
-        'mongodb+srv://tony:tonytony@max-pvoh5.mongodb.net/test?retryWrites=true&w=majority'
-    )
+    MongoClient.connect('mongodb://localhost:27017/shop?retryWrites=true&w=majority', {
+        useUnifiedTopology: true,
+        useNewUrlParser: true
+    })
         .then(client => {
             console.log('Connected!!!');
             _db = client.db();
