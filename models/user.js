@@ -16,6 +16,11 @@ class User {
 
     static findById(userId) {
         const db = getDb();
-        return db.collection('users').find({ _id: new ObjectId(userId) }).next();
+        return db
+            .collection('users')
+            .find({ _id: new mongodb.ObjectID(userId) })
+            .next();
     }
 }
+
+module.exports = User;

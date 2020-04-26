@@ -2,7 +2,7 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const errorController = require('./controllers/error');
-const user = require('./models/user');
+const User = require('./models/user');
 //mongo db
 const mongoConnect = require('./util/db').mongoConnect;
 
@@ -20,13 +20,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
-    User.findById('5ea571bcc71a2b2b10c9341a')
+    User
+        .findById('5ea571bcc71a2b2b10c9341a')
         .then(user => {
             req.user = user;
             next();
         })
         .catch(err => console.log(err))
-    next();
 });
 
 app.use('/admin', adminRoutes);
