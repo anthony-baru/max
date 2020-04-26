@@ -2,7 +2,7 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const errorController = require('./controllers/error');
-
+const user = require('./models/user');
 //mongo db
 const mongoConnect = require('./util/db').mongoConnect;
 
@@ -20,12 +20,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
-    // User.findOne({ where: { id: 1 } })
-    //     .then(user => {
-    //         req.user = user;
-    //         next();
-    //     })
-    //     .catch(err => console.log(err))
+    User.findById('5ea571bcc71a2b2b10c9341a')
+        .then(user => {
+            req.user = user;
+            next();
+        })
+        .catch(err => console.log(err))
     next();
 });
 
@@ -36,6 +36,5 @@ app.use(errorController.get404);
 let port = process.env.port || 3000;
 
 mongoConnect(client => {
-    console.log(client);
     app.listen(port)
 })
