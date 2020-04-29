@@ -28,9 +28,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({ secret: 'mysecret', resave: false, saveUninitialized: false, store: store }))
 
+
 app.use((req, res, next) => {
+    if (!req.session.user._id) {
+        return next();
+    }
     User
-        .findById('5ea69fddff66814ef44e762d')
+        .findById(req.session.user._id)
         .then(user => {
             req.user = user;
             next();
