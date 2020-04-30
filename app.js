@@ -30,7 +30,7 @@ app.use(session({ secret: 'mysecret', resave: false, saveUninitialized: false, s
 
 
 app.use((req, res, next) => {
-    if (!req.session.user._id) {
+    if (!req.session.user) {
         return next();
     }
     User
@@ -54,21 +54,6 @@ mongoose.connect(MONGODB_URI, {
     useNewUrlParser: true
 })
     .then((result) => {
-        User
-            .findOne()
-            .then(user => {
-                if (!user) {
-                    const user = new User({
-                        name: 'tony',
-                        email: 'anthonybaru@gmail.com',
-                        cart: {
-                            items: []
-                        }
-                    })
-                    user.save()
-                        .catch(err => console.log(err));
-                }
-            })
         app.listen(port);
     })
     .catch(err => {
