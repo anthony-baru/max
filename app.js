@@ -12,12 +12,12 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 const MONGODB_URI = 'mongodb://localhost:27017/shop?retryWrites=true&w=majority';
 
 const app = express();
-const csrfProtection = csrf();
 const store = new MongoDBStore({
     uri: MONGODB_URI,
     collection: 'sessions',
 
 })
+const csrfProtection = csrf();
 // views
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -43,7 +43,12 @@ app.use((req, res, next) => {
         })
         .catch(err => console.log(err))
 });
-
+app.use((req, res, next) => {
+    res.locals.isAuthenticated = req.session.isLoggedIn;
+    res.locals.csrfToken = req.csrfToken();
+    next();
+})
+// routes
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
