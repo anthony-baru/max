@@ -5,6 +5,7 @@ const errorController = require('./controllers/error');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const csrf = require('csurf');
+const flash = require('connect-flash');
 
 const User = require('./models/user');
 //mongo db
@@ -30,6 +31,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({ secret: 'mysecret', resave: false, saveUninitialized: false, store: store }))
 app.use(csrfProtection);
+app.use(flash());
 
 app.use((req, res, next) => {
     if (!req.session.user) {
