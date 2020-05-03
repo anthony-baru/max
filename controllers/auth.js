@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
+const sendMail = require('../util/mail.config');
 
 exports.getLogin = (req, res, next) => {
     let message = req.flash('error');
@@ -73,7 +74,8 @@ exports.postSignup = (req, res, next) => {
 
                 return res.redirect('/signup');
             }
-            return bcrypt.hash(password, 12)
+            return bcrypt
+                .hash(password, 12)
                 .then(hashedP => {
                     const user = new User({
                         name: name,
@@ -84,7 +86,11 @@ exports.postSignup = (req, res, next) => {
                     return user.save();
                 })
                 .then(result => {
-                    console.log(result);
+                    sendMail(email, 'sign up succeeded', '<h1>Sign up successful mate!</h1>', (err, data) => {
+                        if (err) {
+                            return res.status(500).json({ message: "Internal Error!", data: data });
+                        }
+                    });
                     res.redirect('/login');
                 })
         }).catch(err => { console.log(err) })

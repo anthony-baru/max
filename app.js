@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const csrf = require('csurf');
 const flash = require('connect-flash');
+require('dotenv').config();
+
 
 const User = require('./models/user');
 //mongo db
@@ -57,7 +59,6 @@ app.use(authRoutes);
 
 app.use(errorController.get404);
 let port = process.env.port || 3000;
-
 mongoose.connect(MONGODB_URI, {
     useUnifiedTopology: true,
     useNewUrlParser: true
