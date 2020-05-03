@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const sendMail = require('../util/mail.config');
-
+const crypto = require('crypto');
 exports.getLogin = (req, res, next) => {
     let message = req.flash('error');
     if (message.length > 0) {
@@ -71,7 +71,6 @@ exports.postSignup = (req, res, next) => {
         .then(user => {
             if (user) {
                 req.flash('error', 'Email already exists. Please enter a different one.');
-
                 return res.redirect('/signup');
             }
             return bcrypt
@@ -105,3 +104,50 @@ exports.postLogout = (req, res, next) => {
         });
     });
 };
+
+exports.getReset = (req, res, next) => {
+    let message = req.flash('error');
+    if (message.length > 0) {
+        message = message[0];
+    } else {
+        message = null;
+    }
+    res.render('auth/reset', {
+        path: '/reset',
+        pageTitle: 'Reset Password',
+        isAuthenticated: false,
+        csrfToken: req.csrfToken(),
+        errorMessage: message
+    });
+};
+
+exports.postReset = (req, res, next) => {
+    crypto.randomBytes(32, (err, buffer) => {
+        if (err) {
+            console.log(err);
+            return res.redirect('/reset');
+        }
+        const token = buffer.toString('hex');
+        User
+            .findOne({ email: req.body.email })
+            .then(user => {
+                if (!user) {
+                    req.flash('error', 'Invalid email');
+                    return res.redirect('/reset');
+                }
+                user.resetToken = token;
+                user.resetTokenExpiration = Date.now() + 3600000;
+                return user.save();
+            })
+            .then(result => {
+                res.redirect('/');
+                sendMail(
+                    req.body.email,
+                    'PASSWORD RESET LINK',
+                    `<p>Here is your password reset link valid for one hour:</p>
+                <p>Click this <a href='http://localhost:3000/reset/${token}'>link</a> to set new password.</p>`
+                )
+            })
+            .catch(err => console.log(err))
+    })
+}

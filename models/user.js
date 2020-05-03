@@ -20,7 +20,9 @@ const userSchema = mongoose.Schema({
                 quantity: { type: Number, required: true }
             }
         ]
-    }
+    },
+    resetToken: String,
+    resetTokenExpiration: Date
 });
 userSchema.methods.addToCart = function (product) {
     const cartProductIndex = this.cart.items.findIndex(cp => {
