@@ -67,7 +67,6 @@ exports.postSignup = (req, res, next) => {
     const name = req.body.name;
     const email = req.body.email;
     const password = req.body.password;
-    const confirmPassword = req.body.confirmPassword;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         console.log(errors.array())
@@ -77,36 +76,27 @@ exports.postSignup = (req, res, next) => {
             isAuthenticated: false,
             csrfToken: req.csrfToken(),
             errorMessage: errors.array()[0].msg
-
         });
     }
-    User.findOne({ email: email })
-        .then(user => {
-            if (user) {
-                req.flash('error', 'Email already exists. Please enter a different one.');
-                return res.redirect('/signup');
-            }
-            return bcrypt
-                .hash(password, 12)
-                .then(hashedP => {
-                    const user = new User({
-                        name: name,
-                        email: email,
-                        password: hashedP,
-                        cart: { items: [] }
-                    });
-                    return user.save();
-                })
-                .then(result => {
-                    sendMail(email, 'sign up succeeded', '<h1>Sign up successful mate!</h1>', (err, data) => {
-                        if (err) {
-                            return res.status(500).json({ message: "Internal Error!", data: data });
-                        }
-                    });
-                    res.redirect('/login');
-                })
-        }).catch(err => { console.log(err) })
-
+    bcrypt
+        .hash(password, 12)
+        .then(hashedP => {
+            const user = new User({
+                name: name,
+                email: email,
+                password: hashedP,
+                cart: { items: [] }
+            });
+            return user.save();
+        })
+        .then(result => {
+            sendMail(email, 'sign up succeeded', '<h1>Sign up successful mate!</h1>', (err, data) => {
+                if (err) {
+                    return res.status(500).json({ message: "Internal Error!", data: data });
+                }
+            });
+            res.redirect('/login');
+        })
 };
 
 exports.postLogout = (req, res, next) => {
