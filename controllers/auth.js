@@ -189,7 +189,8 @@ exports.postNewPassword = (req, res, next) => {
     User.findOne({ resetToken: passwordToken, resetTokenExpiration: { $gt: Date.now() }, _id: userId })
         .then(user => {
             resetUser = user;
-            return bcrypt.hash(newPassword, 12)
+            return bcrypt
+                .hash(newPassword, 12)
         })
         .then(hash => {
             resetUser.password = hash;
@@ -202,3 +203,4 @@ exports.postNewPassword = (req, res, next) => {
         })
         .catch(err => console.log(err))
 }
+
