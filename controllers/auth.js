@@ -145,9 +145,60 @@ exports.postReset = (req, res, next) => {
                     req.body.email,
                     'PASSWORD RESET LINK',
                     `<p>Here is your password reset link valid for one hour:</p>
-                <p>Click this <a href='http://localhost:3000/reset/${token}'>link</a> to set new password.</p>`
+                <p>Click this <a href='http://localhost:3000/reset/${token}'>link</a> to set new password.</p>`,
+                    (err, info) => {
+                        if (err) {
+                            console.log(err)
+                        }
+                    }
                 )
             })
             .catch(err => console.log(err))
     })
+}
+
+exports.getNewPassword = (req, res, next) => {
+    const token = req.params.token;
+    User
+        .findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } })
+        .then(user => {
+            let message = req.flash('error');
+            if (message.length > 0) {
+                message = message[0];
+            } else {
+                message = null;
+            }
+            res.render('auth/new-password', {
+                path: '/new-passowrd',
+                pageTitle: 'New Password',
+                isAuthenticated: false,
+                csrfToken: req.csrfToken(),
+                errorMessage: message,
+                userId: user._id.toString(),
+                passwordToken: token
+            });
+        })
+        .catch(err => { console.log(err) })
+}
+
+exports.postNewPassword = (req, res, next) => {
+    const newPassword = req.body.password;
+    const userId = req.body.userId;
+    const passwordToken = req.body.passwordToken;
+    let resetUser;
+    User.findOne({ resetToken: passwordToken, resetTokenExpiration: { $gt: Date.now() }, _id: userId })
+        .then(user => {
+            resetUser = user;
+            return bcrypt.hash(newPassword, 12)
+        })
+        .then(hash => {
+            resetUser.password = hash;
+            resetUser.resetToken = undefined;
+            resetUser.resetTokenExpiration = undefined;
+            return resetUser.save();
+        })
+        .then(result => {
+            res.redirect('/login');
+        })
+        .catch(err => console.log(err))
 }
