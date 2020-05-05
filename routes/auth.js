@@ -6,7 +6,14 @@ const router = express.Router();
 
 router.get('/login', authController.getLogin);
 
-router.post('/login', authController.postLogin);
+router.post('/login', [
+    body('email')
+        .isEmail().withMessage('Please enter valid email').normalizeEmail(),
+    body('password', 'Password has to be valid.')
+        .isLength({ min: 5 })
+        .isAlphanumeric()
+        .trim()
+], authController.postLogin);
 
 router.get('/signup', authController.getSignup);
 
@@ -21,11 +28,14 @@ router.post('/signup', [
                         return Promise.reject('Email exist. Please enter a different one.');
                     }
                 })
-        }),
-    body('password')
+        })
+        .normalizeEmail(),
+    check('password')
         .isLength({ min: 5 }).withMessage('Must be min 5 characters')
-        .isAlphanumeric().withMessage('Password must be alphanumeric'),
+        .isAlphanumeric().withMessage('Password must be alphanumeric')
+        .trim(),
     body('confirmPassword')
+        .trim()
         .custom((value, { req }) => {
             if (value !== req.body.password) {
                 throw new Error(`Passwords don't match`)
