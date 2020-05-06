@@ -15,16 +15,16 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
+  const imageUrl = req.file.image;
   const price = req.body.price;
   const description = req.body.description;
+  console.log('this image', imageUrl)
   const errors = validationResult(req);
-
   if (!errors.isEmpty()) {
     console.log(errors.array());
     return res.status(422).render('admin/edit-product', {
       pageTitle: 'Add Product',
-      path: '/admin/edit-product',
+      path: '/admin/add-product',
       editing: false,
       hasError: true,
       product: {
@@ -45,6 +45,7 @@ exports.postAddProduct = (req, res, next) => {
     imageUrl: imageUrl,
     userId: req.user
   });
+
   product
     .save()
     .then(result => {
@@ -53,7 +54,11 @@ exports.postAddProduct = (req, res, next) => {
       res.redirect('/admin/products');
     })
     .catch(err => {
-      console.log(err);
+      // res.redirect('/500');
+      // const error = new Error(err);
+      // error.httpStatusCode = 500;
+      // return next(error);
+      console.log(err)
     });
 };
 
@@ -78,7 +83,11 @@ exports.getEditProduct = (req, res, next) => {
         validationErrors: []
       });
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.postEditProduct = (req, res, next) => {
