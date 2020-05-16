@@ -124,7 +124,9 @@ mongoose
     useNewUrlParser: true
   })
   .then(result => {
-    app.listen(8282);
+    port = process.env.port || 8282;
+    app.listen(port);
+    console.log(`listening on port: ${port}`)
   })
   .catch(err => {
     console.log(err);
